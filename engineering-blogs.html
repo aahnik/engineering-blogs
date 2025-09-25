@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&display=swap"
+      rel="stylesheet"
+    />
+    <title>Engineering Blog Gallery</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: #000000;
+        min-height: 100vh;
+        padding: 2rem 1rem;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .search-container {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .search-box {
+        width: 100%;
+        max-width: 400px;
+        padding: 1rem 1.5rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        outline: none;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .search-box:focus {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .random-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: none;
+        background: white;
+        color: #4c51bf; /* indigo-700 */
+        font-size: 1.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: transform 0.15s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
+      }
+
+      .random-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+      }
+
+      .card.highlight {
+        border: 6px solid transparent;
+        background:
+          linear-gradient(#ffffff, #ffffff) padding-box,
+          linear-gradient(135deg, #667eea, #764ba2, #f59e0b) border-box;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        padding: 1rem 0;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transition: left 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      }
+
+      .card:hover::before {
+        left: 0;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .company-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        margin-right: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        flex-shrink: 0;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .company-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .card-content h3 {
+        font-size: 1.3rem;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .card-content p {
+        color: #718096;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+      }
+
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .visit-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .visit-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      .tag {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .stats {
+        text-align: center;
+        margin-top: 3rem;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .stats h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .gallery {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .card {
+          padding: 1.25rem;
+        }
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Engineering Blog Gallery</h1>
+        <p>
+          Discover the best engineering blogs from top tech companies around the
+          world
+        </p>
+      </div>
+
+      <div class="search-container">
+        <input
+          type="text"
+          class="search-box"
+          placeholder="Search companies..."
+          id="searchInput"
+        />
+        <button id="randomBtn" class="random-btn" title="Show a random blog" aria-label="Show a random blog">🎲</button>
+      </div>
+
+      <div class="gallery" id="gallery"></div>
+
+      <div class="stats">
+        <h3 id="statsCount">51 Engineering Blogs</h3>
+        <p>Stay updated with the latest in tech and engineering</p>
+      </div>
+    </div>
+
+    <script>
+      const blogSites = [
+        {
+          name: "Engineering @ Meta",
+          url: "https://engineering.fb.com/",
+          description:
+            "Insights from Meta's engineering teams building products for billions of users worldwide.",
+        },
+        {
+          name: "OpenAI Software Engineering",
+          url: "https://openai.com/blog/",
+          description:
+            "Deep dives into AI research and engineering at the forefront of artificial intelligence.",
+        },
+        {
+          name: "Stripe Engineering",
+          url: "https://stripe.com/blog/engineering",
+          description:
+            "Building the economic infrastructure of the internet with elegant engineering solutions.",
+        },
+        {
+          name: "Netflix Tech",
+          url: "https://netflixtechblog.com/",
+          description:
+            "Scaling entertainment technology for 200+ million members globally.",
+        },
+        {
+          name: "Airbnb Tech",
+          url: "https://medium.com/airbnb-engineering",
+          description:
+            "Engineering the world's largest accommodation platform and travel community.",
+        },
+        {
+          name: "AWS",
+          url: "https://aws.amazon.com/blogs/aws/",
+          description:
+            "Cloud computing insights from the world's most comprehensive cloud platform.",
+        },
+        {
+          name: "Uber Engineering",
+          url: "https://eng.uber.com/",
+          description:
+            "Moving the world through innovative transportation and delivery technology.",
+        },
+        {
+          name: "Figma Engineering",
+          url: "https://www.figma.com/blog/engineering/",
+          description:
+            "Building collaborative design tools that transform creative workflows.",
+        },
+        {
+          name: "Pinterest Engineering",
+          url: "https://medium.com/pinterest-engineering",
+          description:
+            "Inspiring millions through discovery and visual search technology.",
+        },
+        {
+          name: "Dropbox Tech",
+          url: "https://dropbox.tech/",
+          description:
+            "Simplifying the way people work together with smart storage solutions.",
+        },
+        {
+          name: "Instagram Engineering",
+          url: "https://instagram-engineering.com/",
+          description:
+            "Connecting billions through visual storytelling and social media innovation.",
+        },
+        {
+          name: "Discord",
+          url: "https://discord.com/blog/engineering",
+          description:
+            "Building communities through voice, video, and text communication platforms.",
+        },
+        {
+          name: "DoorDash",
+          url: "https://doordash.engineering/",
+          description:
+            "Connecting consumers with local businesses through last-mile logistics.",
+        },
+        {
+          name: "Databricks",
+          url: "https://www.databricks.com/blog/categories/engineering",
+          description:
+            "Unifying analytics and AI for lakehouse architecture and data intelligence.",
+        },
+        {
+          name: "Confluent",
+          url: "https://www.confluent.io/blog/category/engineering/",
+          description:
+            "Streaming data platforms powered by Apache Kafka for real-time applications.",
+        },
+        {
+          name: "Cloudflare",
+          url: "https://blog.cloudflare.com/",
+          description:
+            "Building a better internet through security, performance, and reliability.",
+        },
+        {
+          name: "GitHub",
+          url: "https://github.blog/engineering/",
+          description:
+            "Where the world builds software through collaborative development platforms.",
+        },
+        {
+          name: "Slack Engineering",
+          url: "https://slack.engineering/",
+          description:
+            "Transforming workplace communication and productivity through innovative tools.",
+        },
+        {
+          name: "Heroku",
+          url: "https://blog.heroku.com/engineering",
+          description:
+            "Simplifying app deployment and scaling through platform-as-a-service solutions.",
+        },
+        {
+          name: "Canva Engineering",
+          url: "https://www.canva.dev/blog/engineering/",
+          description:
+            "Democratizing design through accessible and powerful creative tools.",
+        },
+        {
+          name: "Notion Tech",
+          url: "https://www.notion.so/blog/engineering",
+          description:
+            "All-in-one workspace combining notes, tasks, wikis, and databases.",
+        },
+        {
+          name: "Facebook AI Research",
+          url: "https://ai.meta.com/blog/",
+          description:
+            "Advancing the field of artificial intelligence through open research.",
+        },
+        {
+          name: "Rippling Engineering",
+          url: "https://www.rippling.com/blog/engineering",
+          description:
+            "Simplifying HR, IT, and finance operations through integrated systems.",
+        },
+        {
+          name: "Engineering @ Ramp",
+          url: "https://www.ramp.com/engineering",
+          description:
+            "Modern finance tools and corporate cards powered by smart technology.",
+        },
+        {
+          name: "Medium Engineering",
+          url: "https://medium.engineering/",
+          description:
+            "Building platforms for writers and readers to share meaningful content.",
+        },
+        {
+          name: "Stack Overflow Engineering",
+          url: "https://stackoverflow.blog/engineering/",
+          description:
+            "Empowering developers worldwide through knowledge sharing platforms.",
+        },
+        {
+          name: "Credit Karma",
+          url: "https://engineering.creditkarma.com/",
+          description:
+            "Making financial progress possible through transparent credit insights.",
+        },
+        {
+          name: "Algolia",
+          url: "https://blog.algolia.com/",
+          description:
+            "Powering search and discovery experiences for thousands of applications.",
+        },
+        {
+          name: "PayPal Tech",
+          url: "https://medium.com/paypal-tech",
+          description:
+            "Enabling digital payments and financial services for global commerce.",
+        },
+        {
+          name: "Reddit Eng",
+          url: "https://reddit.engineering/",
+          description:
+            "Building communities and conversations for hundreds of millions of users.",
+        },
+        {
+          name: "Quora Engineering",
+          url: "https://quoraengineering.quora.com/",
+          description:
+            "Connecting people with knowledge through question and answer platforms.",
+        },
+        {
+          name: "Deliveroo",
+          url: "https://deliveroo.engineering/",
+          description:
+            "Delivering amazing food experiences through innovative logistics technology.",
+        },
+        {
+          name: "Booking.com",
+          url: "https://blog.booking.com/",
+          description:
+            "Making travel easier and more accessible through booking platforms.",
+        },
+        {
+          name: "Atlassian",
+          url: "https://www.atlassian.com/engineering",
+          description:
+            "Unleashing team potential through collaboration and productivity tools.",
+        },
+        {
+          name: "GoCardless",
+          url: "https://gocardless.com/blog/engineering/",
+          description:
+            "Simplifying recurring payments and bank-to-bank transactions.",
+        },
+        {
+          name: "AppNexus",
+          url: "https://techblog.appnexus.com/",
+          description:
+            "Powering programmatic advertising through real-time bidding technology.",
+        },
+        {
+          name: "Evil Martians",
+          url: "https://evilmartians.com/chronicles",
+          description:
+            "Product development consultancy specializing in Ruby, React, and mobile.",
+        },
+        {
+          name: "GoDaddy",
+          url: "https://www.godaddy.com/engineering",
+          description:
+            "Empowering entrepreneurs through domain registration and web hosting.",
+        },
+        {
+          name: "Docker Blog",
+          url: "https://blog.docker.com/",
+          description:
+            "Containerization technology that transforms application development and deployment.",
+        },
+        {
+          name: "Twitter Engineering",
+          url: "https://blog.twitter.com/engineering",
+          description:
+            "Real-time information sharing platform connecting global conversations.",
+        },
+        {
+          name: "Guardian Developer Blog",
+          url: "https://www.theguardian.com/info/developer-blog",
+          description:
+            "Digital journalism and media technology from The Guardian's engineering team.",
+        },
+        {
+          name: "Asana Engineering",
+          url: "https://blog.asana.com/category/eng/",
+          description:
+            "Team coordination and work management through intuitive project tools.",
+        },
+        {
+          name: "Groupon Engineering",
+          url: "https://medium.com/groupon-eng",
+          description:
+            "Local commerce marketplace connecting consumers with businesses.",
+        },
+        {
+          name: "Grab Engineering",
+          url: "https://engineering.grab.com/",
+          description:
+            "Southeast Asia's leading superapp for transportation, food, and payments.",
+        },
+        {
+          name: "Envoy Engineering",
+          url: "https://envoy.engineering/",
+          description:
+            "Workplace platform solutions for modern office management and visitor experience.",
+        },
+      ];
+
+      // Remove duplicates based on name
+      const uniqueBlogSites = blogSites.filter(
+        (site, index, self) =>
+          index === self.findIndex((s) => s.name === site.name)
+      );
+
+      function getCompanyLogo(name) {
+        const logoMap = {
+          "Engineering @ Meta": "https://www.facebook.com/favicon.ico",
+          "OpenAI Software Engineering": "https://openai.com/favicon.ico",
+          "Stripe Engineering": "https://stripe.com/favicon.ico",
+          "Netflix Tech": "https://www.netflix.com/favicon.ico",
+          "Airbnb Tech": "https://www.airbnb.com/favicon.ico",
+          AWS: "https://aws.amazon.com/favicon.ico",
+          "Uber Engineering": "https://www.uber.com/favicon.ico",
+          "Figma Engineering":
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Figma-logo.svg/960px-Figma-logo.svg.png",
+          "Pinterest Engineering": "https://pinterest.com/favicon.ico",
+          "Dropbox Tech":
+            "https://www.logo.wine/a/logo/Dropbox_(service)/Dropbox_(service)-Icon-Logo.wine.svg",
+          "Instagram Engineering":
+            "https://img.freepik.com/free-vector/instagram-logo_1199-122.jpg?semt=ais_hybrid&w=740&q=80",
+          Discord:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZkjJsjxdWHZx1bu22YA_cJm7bicMd7d_pfw&s",
+          DoorDash: "https://doordash.engineering/favicon.ico",
+          Databricks:
+            "https://1000logos.net/wp-content/uploads/2025/01/Databricks-Emblem.png",
+          Confluent: "https://www.confluent.io/favicon.ico",
+          Cloudflare: "https://www.cloudflare.com/favicon.ico",
+          GitHub: "https://github.com/favicon.ico",
+          "Slack Engineering": "https://slack.com/favicon.ico",
+          Heroku:
+            "https://i0.wp.com/gluonhq.com/wp-content/uploads/2018/05/heroku-logotype-vertical-purple.png?fit=576%2C684&ssl=1",
+          "Canva Engineering": "https://www.canva.com/favicon.ico",
+          "Notion Tech":
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/1024px-Notion-logo.svg.png",
+          "Facebook AI Research":
+            "https://upload.wikimedia.org/wikipedia/commons/3/3b/Meta_AI_Logo_%28Ring_Only%29.png",
+          "Rippling Engineering":
+            "https://rippling2.imgix.net/RipplingGoogleAvatar_250.png",
+          "Engineering @ Ramp": "https://ramp.com/favicon.ico",
+          "Medium Engineering":
+            "https://images.icon-icons.com/3041/PNG/512/medium_logo_icon_189223.png",
+          "Stack Overflow Engineering": "https://stackoverflow.com/favicon.ico",
+          "Credit Karma": "https://www.creditkarma.com/favicon.ico",
+          Algolia: "https://www.algolia.com/favicon.ico",
+          "PayPal Tech": "https://www.paypal.com/favicon.ico",
+          "Reddit Eng": "https://www.reddit.com/favicon.ico",
+          "Quora Engineering": "https://www.quora.com/favicon.ico",
+          Deliveroo:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShO6vCC5VddzqSGR03_Sxp13O0KQIxtS05xQ&s",
+          "Booking.com":
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVqpq-6zK3cs6d6dFWCxF4QXs1AjqVuKwsmQ&s",
+          Atlassian: "https://www.atlassian.com/favicon.ico",
+          GoCardless:
+            "https://appexchange.salesforce.com/image_host/d0083f38-de4a-4942-b4da-4b5069b80c2b.png",
+          AppNexus:
+            "https://pbs.twimg.com/profile_images/626959235843248128/zAoSLQcc_400x400.jpg",
+          "Evil Martians": "https://evilmartians.com/favicon.ico",
+          GoDaddy:
+            "https://download.logo.wine/logo/GoDaddy/GoDaddy-Logo.wine.png",
+          "Docker Blog": "https://www.docker.com/favicon.ico",
+          "Twitter Engineering": "https://twitter.com/favicon.ico",
+          "Guardian Developer Blog": "https://www.theguardian.com/favicon.ico",
+          "Asana Engineering": "https://asana.com/favicon.ico",
+          "Groupon Engineering":
+            "https://images.icon-icons.com/2699/PNG/512/groupon_logo_icon_171034.png",
+          "Grab Engineering": "https://www.grab.com/favicon.ico",
+          "Envoy Engineering": "https://envoy.com/favicon.ico",
+        };
+
+        return logoMap[name] || null;
+      }
+
+      function getCompanyInitials(name) {
+        // Remove common prefixes for cleaner initials
+        const cleanName = name.replace(
+          /^(Engineering @ |Tech|Engineering|Blog|Software )/i,
+          ""
+        );
+        return cleanName
+          .split(/[\s-&]+/)
+          .filter((word) => word.length > 0 && !/^[&@]/.test(word))
+          .map((word) => word.charAt(0))
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+      }
+
+      function getRandomColor() {
+        const colors = [
+          "#667eea",
+          "#764ba2",
+          "#f093fb",
+          "#f5576c",
+          "#4facfe",
+          "#00f2fe",
+          "#43e97b",
+          "#38f9d7",
+          "#ffecd2",
+          "#fcb69f",
+          "#a8edea",
+          "#fed6e3",
+          "#667eea",
+          "#764ba2",
+          "#ff9a9e",
+          "#fecfef",
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      function createCard(site) {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const logoUrl = getCompanyLogo(site.name);
+        const initials = getCompanyInitials(site.name);
+        const color = getRandomColor();
+
+        const logoContent = logoUrl
+          ? `<img src="${logoUrl}" alt="${site.name} logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">`
+          : `<div style="color: white; font-weight: bold; font-size: 1.2rem;">${initials}</div>`;
+
+        const logoStyle = logoUrl
+          ? "background: white; padding: 4px;"
+          : `background: ${color};`;
+
+        card.innerHTML = `
+                <div class="card-header">
+                    <div class="company-logo" style="${logoStyle}">${logoContent}</div>
+                    <div class="card-content">
+                        <h3>${site.name}</h3>
+                        <p>${site.description}</p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="tag">Engineering</span>
+                    <a href="${site.url}" class="visit-btn" target="_blank" rel="noopener noreferrer">Visit Blog</a>
+                </div>
+            `;
+
+        card.addEventListener("click", (e) => {
+          if (e.target.tagName !== "A") {
+            window.open(site.url, "_blank");
+          }
+        });
+
+        return card;
+      }
+
+      function renderGallery(sites = uniqueBlogSites) {
+        const gallery = document.getElementById("gallery");
+        gallery.innerHTML = "";
+
+        sites.forEach((site, index) => {
+          setTimeout(() => {
+            const card = createCard(site);
+            gallery.appendChild(card);
+          }, index * 50);
+        });
+
+        document.getElementById("statsCount").textContent = `${
+          sites.length
+        } Engineering Blog${sites.length !== 1 ? "s" : ""}`;
+      }
+
+      function setupSearch() {
+        const searchInput = document.getElementById("searchInput");
+
+        searchInput.addEventListener("input", (e) => {
+          const searchTerm = e.target.value.toLowerCase();
+          const filteredSites = uniqueBlogSites.filter(
+            (site) =>
+              site.name.toLowerCase().includes(searchTerm) ||
+              site.description.toLowerCase().includes(searchTerm)
+          );
+          renderGallery(filteredSites);
+        });
+      }
+
+      function centerOnElement(el) {
+        if (!el) return;
+        el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+      }
+
+      function pickRandomVisibleCard() {
+        const gallery = document.getElementById("gallery");
+        if (!gallery) return null;
+        const cards = Array.from(gallery.querySelectorAll(".card"));
+        if (!cards.length) return null;
+        const idx = Math.floor(Math.random() * cards.length);
+        return cards[idx];
+      }
+
+      function setupRandomButton() {
+        const btn = document.getElementById("randomBtn");
+        if (!btn) return;
+        btn.addEventListener("click", () => {
+          const prev = document.querySelector(".card.highlight");
+          if (prev) prev.classList.remove("highlight");
+
+          const card = pickRandomVisibleCard();
+          if (!card) return;
+          card.classList.add("highlight");
+          centerOnElement(card);
+        });
+      }
+
+      // Initialize the gallery
+      renderGallery();
+      setupSearch();
+      setupRandomButton();
+    </script>
+  </body>
+</html>
